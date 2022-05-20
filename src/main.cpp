@@ -1,3 +1,5 @@
+
+
 #include "Arduino.h"
 #include "Adafruit_NeoPixel.h"
 #ifdef __AVR__
@@ -11,20 +13,6 @@
 #define NUMPIXELS      132
 #define BUOYS          60
 
-
-//Types of buoys
-uint32_t Q6_LFI_W_15s[14] = {300,700,300,700,300,700,300,700,300,700,300,700,2000,7000};
-uint32_t Mo_A_10s[14] = {500,500,1500,7500,0,0,0,0,0,0,0,0,0,0};
-uint32_t FI_Y_3s[14] = {1000,2000,0,0,0,0,0,0,0,0,0,0,0,0};
-uint32_t LFI_10s[14] = {3000,7000,0,0,0,0,0,0,0,0,0,0,0,0};
-uint32_t Iso_10s[14] = {5000,5000,0,0,0,0,0,0,0,0,0,0,0,0};
-uint32_t Q[14] = {500,500,0,0,0,0,0,0,0,0,0,0,0,0};
-uint32_t Oc_G_10s_9m[14] = {6000,4000,0,0,0,0,0,0,0,0,0,0,0,0};
-uint32_t Iso_4s[14] = {2000,2000,0,0,0,0,0,0,0,0,0,0,0,0};
-uint32_t DIR[14] = {5000,1,0,0,0,0,0,0,0,0,0,0,0,0};
-uint32_t Q_3_10s[14] = {300,700,300,700,300,7700,0,0,0,0,0,0,0,0};
-uint32_t Oc_WRG_4s[14] = {2500,1500,0,0,0,0,0,0,0,0,0,0,0,0};
-
 Adafruit_NeoPixel pixels_1 = Adafruit_NeoPixel(NUMPIXELS, PIN_LED1, NEO_GRB + NEO_KHZ800);
 
  
@@ -36,7 +24,7 @@ typedef struct
   int color[3];
   int numOfSeq;
   int counter;
-  uint32_t sequence[14];
+  uint32_t sequence[19];
   uint32_t timer;
 } buoy;
 
@@ -65,7 +53,7 @@ int led_on_Hel = 0;
 int led_on_Gdansk = 0;
 int led_on_Sopot = 0;
 int led_on_Krynica = 0;
-int led_on_Shchuukinskiy = 0;
+int led_on_Shchukinskiy = 0;
 int led_on_Obzornyy = 0;
 int led_on_Taran = 0;
 int led_on_Rozewie = 0;
@@ -86,18 +74,14 @@ void setup() {
 }
  
 void setLed(int stripeNr, int ledNr, int R, int G, int B){
-
   pixels_1.setPixelColor(ledNr, pixels_1.Color(R,G,B));      
   // pixels_1.show();    
-
-  
 }
 void loop() {
   
   //BUOYS
   now = millis();
   for(unsigned int a = 0; a < BUOYS; a = a + 1 ){
-  
     if(buoyList[a].counter == 0){
       setLed(buoyList[a].stripe,buoyList[a].nr_led,buoyList[a].color[0],buoyList[a].color[1],buoyList[a].color[2]);
     }
@@ -118,18 +102,17 @@ void loop() {
   }
   pixels_1.show();  
 
-  // HEL LIGHTHOUSE
+  //LIGHTHOUSES
   now = millis();
-
   if(now - lhTimer >= lhdel){ 
-    
-    for(unsigned int a = 0; a < Hel_n_leds; a = a + 1 ){
+  
+  //HEL LIGHTHOUSE
 
+    for(unsigned int a = 0; a < Hel_n_leds; a = a + 1 ){
       if(Hel[a].dimmingState == 1){
         if(Hel[a].colorCounter < Hel[a].color[0]){
           Hel[a].colorCounter+=1;
           pixels_1.setPixelColor(Hel[a].nr_led, pixels_1.Color(Hel[a].colorCounter,Hel[a].colorCounter,Hel[a].colorCounter/2));      
-
         }
         else if(Hel[a].colorCounter >= Hel[a].color[0]){
           Hel[a].dimmingState = -1;
@@ -137,10 +120,10 @@ void loop() {
       }
       if(Hel[a].dimmingState == -1){
         if(Hel[a].colorCounter == Hel[a].color[0]/2){
-          if(a<7){
+          if(a<Hel_n_leds-1){
             led_on_Hel=a+1;
           }
-          else if(a==7){
+          else if(a==Hel_n_leds-1){
             led_on_Hel=0;
           }
           Hel[led_on_Hel].dimmingState = 1;
@@ -148,7 +131,6 @@ void loop() {
         if(Hel[a].colorCounter > 1){
           Hel[a].colorCounter-=1;  
           pixels_1.setPixelColor(Hel[a].nr_led, pixels_1.Color(Hel[a].colorCounter,Hel[a].colorCounter,Hel[a].colorCounter/2));         
-
         }
         else if(Hel[a].colorCounter <= 1){
           Hel[a].dimmingState = 0;
@@ -156,84 +138,291 @@ void loop() {
         }
       }
     }
+
+    //JASTARNIA LIGHTHOUSE
+
+    for(unsigned int a = 0; a < Jastarnia_n_leds; a = a + 1 ){
+      if(Jastarnia[a].dimmingState == 1){
+        if(Jastarnia[a].colorCounter < Jastarnia[a].color[0]){
+          Jastarnia[a].colorCounter+=1;
+          pixels_1.setPixelColor(Jastarnia[a].nr_led, pixels_1.Color(Jastarnia[a].colorCounter,Jastarnia[a].colorCounter,Jastarnia[a].colorCounter/2));      
+        }
+        else if(Jastarnia[a].colorCounter >= Jastarnia[a].color[0]){
+          Jastarnia[a].dimmingState = -1;
+        }
+      }
+      if(Jastarnia[a].dimmingState == -1){
+        if(Jastarnia[a].colorCounter == Jastarnia[a].color[0]/2){
+          if(a<Jastarnia_n_leds-1){
+            led_on_Jastarnia=a+1;
+          }
+          else if(a==Jastarnia_n_leds-1){
+            led_on_Jastarnia=0;
+          }
+          Jastarnia[led_on_Jastarnia].dimmingState = 1;
+        }
+        if(Jastarnia[a].colorCounter > 1){
+          Jastarnia[a].colorCounter-=1;  
+          pixels_1.setPixelColor(Jastarnia[a].nr_led, pixels_1.Color(Jastarnia[a].colorCounter,Jastarnia[a].colorCounter,Jastarnia[a].colorCounter/2));         
+        }
+        else if(Jastarnia[a].colorCounter <= 1){
+          Jastarnia[a].dimmingState = 0;
+          pixels_1.setPixelColor(Jastarnia[a].nr_led, pixels_1.Color(0,0,0));      
+        }
+      }
+    }
+    //KASZYCA LIGHTHOUSE
+
+    for(unsigned int a = 0; a < Kaszyca_n_leds; a = a + 1 ){
+      if(Kaszyca[a].dimmingState == 1){
+        if(Kaszyca[a].colorCounter < Kaszyca[a].color[0]){
+          Kaszyca[a].colorCounter+=1;
+          pixels_1.setPixelColor(Kaszyca[a].nr_led, pixels_1.Color(Kaszyca[a].colorCounter,Kaszyca[a].colorCounter,Kaszyca[a].colorCounter/2));      
+        }
+        else if(Kaszyca[a].colorCounter >= Kaszyca[a].color[0]){
+          Kaszyca[a].dimmingState = -1;
+        }
+      }
+      if(Kaszyca[a].dimmingState == -1){
+        if(Kaszyca[a].colorCounter == Kaszyca[a].color[0]/2){
+          if(a<Kaszyca_n_leds-1){
+            led_on_Kaszyca=a+1;
+          }
+          else if(a==Kaszyca_n_leds-1){
+            led_on_Kaszyca=0;
+          }
+          Kaszyca[led_on_Kaszyca].dimmingState = 1;
+        }
+        if(Kaszyca[a].colorCounter > 1){
+          Kaszyca[a].colorCounter-=1;  
+          pixels_1.setPixelColor(Kaszyca[a].nr_led, pixels_1.Color(Kaszyca[a].colorCounter,Kaszyca[a].colorCounter,Kaszyca[a].colorCounter/2));         
+        }
+        else if(Kaszyca[a].colorCounter <= 1){
+          Kaszyca[a].dimmingState = 0;
+          pixels_1.setPixelColor(Kaszyca[a].nr_led, pixels_1.Color(0,0,0));      
+        }
+      }
+    }
+    //GDANSK LIGHTHOUSE
+
+    for(unsigned int a = 0; a < Gdansk_n_leds; a = a + 1 ){
+      if(Gdansk[a].dimmingState == 1){
+        if(Gdansk[a].colorCounter < Gdansk[a].color[0]){
+          Gdansk[a].colorCounter+=1;
+          pixels_1.setPixelColor(Gdansk[a].nr_led, pixels_1.Color(Gdansk[a].colorCounter,Gdansk[a].colorCounter,Gdansk[a].colorCounter/2));      
+        }
+        else if(Gdansk[a].colorCounter >= Gdansk[a].color[0]){
+          Gdansk[a].dimmingState = -1;
+        }
+      }
+      if(Gdansk[a].dimmingState == -1){
+        if(Gdansk[a].colorCounter == Gdansk[a].color[0]/2){
+          if(a<Gdansk_n_leds-1){
+            led_on_Gdansk=a+1;
+          }
+          else if(a==Gdansk_n_leds-1){
+            led_on_Gdansk=0;
+          }
+          Gdansk[led_on_Gdansk].dimmingState = 1;
+        }
+        if(Gdansk[a].colorCounter > 1){
+          Gdansk[a].colorCounter-=1;  
+          pixels_1.setPixelColor(Gdansk[a].nr_led, pixels_1.Color(Gdansk[a].colorCounter,Gdansk[a].colorCounter,Gdansk[a].colorCounter/2));         
+        }
+        else if(Gdansk[a].colorCounter <= 1){
+          Gdansk[a].dimmingState = 0;
+          pixels_1.setPixelColor(Gdansk[a].nr_led, pixels_1.Color(0,0,0));      
+        }
+      }
+    }
+    //SOPOT LIGHTHOUSE
+
+    for(unsigned int a = 0; a < Sopot_n_leds; a = a + 1 ){
+      if(Sopot[a].dimmingState == 1){
+        if(Sopot[a].colorCounter < Sopot[a].color[0]){
+          Sopot[a].colorCounter+=1;
+          pixels_1.setPixelColor(Sopot[a].nr_led, pixels_1.Color(Sopot[a].colorCounter,Sopot[a].colorCounter,Sopot[a].colorCounter/2));      
+        }
+        else if(Sopot[a].colorCounter >= Sopot[a].color[0]){
+          Sopot[a].dimmingState = -1;
+        }
+      }
+      if(Sopot[a].dimmingState == -1){
+        if(Sopot[a].colorCounter == Sopot[a].color[0]/2){
+          if(a<Sopot_n_leds-1){
+            led_on_Sopot=a+1;
+          }
+          else if(a==Sopot_n_leds-1){
+            led_on_Sopot=0;
+          }
+          Sopot[led_on_Sopot].dimmingState = 1;
+        }
+        if(Sopot[a].colorCounter > 1){
+          Sopot[a].colorCounter-=1;  
+          pixels_1.setPixelColor(Sopot[a].nr_led, pixels_1.Color(Sopot[a].colorCounter,Sopot[a].colorCounter,Sopot[a].colorCounter/2));         
+        }
+        else if(Sopot[a].colorCounter <= 1){
+          Sopot[a].dimmingState = 0;
+          pixels_1.setPixelColor(Sopot[a].nr_led, pixels_1.Color(0,0,0));      
+        }
+      }
+    }
+    //KRYNICA LIGHTHOUSE
+    for(unsigned int a = 0; a < Krynica_n_leds; a = a + 1 ){
+      if(Krynica[a].dimmingState == 1){
+        if(Krynica[a].colorCounter < Krynica[a].color[0]){
+          Krynica[a].colorCounter+=1;
+          pixels_1.setPixelColor(Krynica[a].nr_led, pixels_1.Color(Krynica[a].colorCounter,Krynica[a].colorCounter,Krynica[a].colorCounter/2));      
+        }
+        else if(Krynica[a].colorCounter >= Krynica[a].color[0]){
+          Krynica[a].dimmingState = -1;
+        }
+      }
+      if(Krynica[a].dimmingState == -1){
+        if(Krynica[a].colorCounter == Krynica[a].color[0]/2){
+          if(a<Krynica_n_leds-1){
+            led_on_Krynica=a+1;
+          }
+          else if(a==Krynica_n_leds-1){
+            led_on_Krynica=0;
+          }
+          Krynica[led_on_Krynica].dimmingState = 1;
+        }
+        if(Krynica[a].colorCounter > 1){
+          Krynica[a].colorCounter-=1;  
+          pixels_1.setPixelColor(Krynica[a].nr_led, pixels_1.Color(Krynica[a].colorCounter,Krynica[a].colorCounter,Krynica[a].colorCounter/2));         
+        }
+        else if(Krynica[a].colorCounter <= 1){
+          Krynica[a].dimmingState = 0;
+          pixels_1.setPixelColor(Krynica[a].nr_led, pixels_1.Color(0,0,0));      
+        }
+      }
+    }
+    //SHCHUKINSKIY LIGHTHOUSE
+    for(unsigned int a = 0; a < Shchukinskiy_n_leds; a = a + 1 ){
+      if(Shchukinskiy[a].dimmingState == 1){
+        if(Shchukinskiy[a].colorCounter < Shchukinskiy[a].color[0]){
+          Shchukinskiy[a].colorCounter+=1;
+          pixels_1.setPixelColor(Shchukinskiy[a].nr_led, pixels_1.Color(Shchukinskiy[a].colorCounter,Shchukinskiy[a].colorCounter,Shchukinskiy[a].colorCounter/2));      
+        }
+        else if(Shchukinskiy[a].colorCounter >= Shchukinskiy[a].color[0]){
+          Shchukinskiy[a].dimmingState = -1;
+        }
+      }
+      if(Shchukinskiy[a].dimmingState == -1){
+        if(Shchukinskiy[a].colorCounter == Shchukinskiy[a].color[0]/2){
+          if(a<Shchukinskiy_n_leds-1){
+            led_on_Shchukinskiy=a+1;
+          }
+          else if(a==Shchukinskiy_n_leds-1){
+            led_on_Shchukinskiy=0;
+          }
+          Shchukinskiy[led_on_Shchukinskiy].dimmingState = 1;
+        }
+        if(Shchukinskiy[a].colorCounter > 1){
+          Shchukinskiy[a].colorCounter-=1;  
+          pixels_1.setPixelColor(Shchukinskiy[a].nr_led, pixels_1.Color(Shchukinskiy[a].colorCounter,Shchukinskiy[a].colorCounter,Shchukinskiy[a].colorCounter/2));         
+        }
+        else if(Shchukinskiy[a].colorCounter <= 1){
+          Shchukinskiy[a].dimmingState = 0;
+          pixels_1.setPixelColor(Shchukinskiy[a].nr_led, pixels_1.Color(0,0,0));      
+        }
+      }
+    }
+    //OBZORNYY LIGHTHOUSE
+    for(unsigned int a = 0; a < Obzornyy_n_leds; a = a + 1 ){
+      if(Obzornyy[a].dimmingState == 1){
+        if(Obzornyy[a].colorCounter < Obzornyy[a].color[0]){
+          Obzornyy[a].colorCounter+=1;
+          pixels_1.setPixelColor(Obzornyy[a].nr_led, pixels_1.Color(Obzornyy[a].colorCounter,Obzornyy[a].colorCounter,Obzornyy[a].colorCounter/2));      
+        }
+        else if(Obzornyy[a].colorCounter >= Obzornyy[a].color[0]){
+          Obzornyy[a].dimmingState = -1;
+        }
+      }
+      if(Obzornyy[a].dimmingState == -1){
+        if(Obzornyy[a].colorCounter == Obzornyy[a].color[0]/2){
+          if(a<Obzornyy_n_leds-1){
+            led_on_Obzornyy=a+1;
+          }
+          else if(a==Obzornyy_n_leds-1){
+            led_on_Obzornyy=0;
+          }
+          Obzornyy[led_on_Obzornyy].dimmingState = 1;
+        }
+        if(Obzornyy[a].colorCounter > 1){
+          Obzornyy[a].colorCounter-=1;  
+          pixels_1.setPixelColor(Obzornyy[a].nr_led, pixels_1.Color(Obzornyy[a].colorCounter,Obzornyy[a].colorCounter,Obzornyy[a].colorCounter/2));         
+        }
+        else if(Obzornyy[a].colorCounter <= 1){
+          Obzornyy[a].dimmingState = 0;
+          pixels_1.setPixelColor(Obzornyy[a].nr_led, pixels_1.Color(0,0,0));      
+        }
+      }
+    }
+    //TARAN LIGHTHOUSE
+    for(unsigned int a = 0; a < Taran_n_leds; a = a + 1 ){
+      if(Taran[a].dimmingState == 1){
+        if(Taran[a].colorCounter < Taran[a].color[0]){
+          Taran[a].colorCounter+=1;
+          pixels_1.setPixelColor(Taran[a].nr_led, pixels_1.Color(Taran[a].colorCounter,Taran[a].colorCounter,Taran[a].colorCounter/2));      
+        }
+        else if(Taran[a].colorCounter >= Taran[a].color[0]){
+          Taran[a].dimmingState = -1;
+        }
+      }
+      if(Taran[a].dimmingState == -1){
+        if(Taran[a].colorCounter == Taran[a].color[0]/2){
+          if(a<Taran_n_leds-1){
+            led_on_Taran=a+1;
+          }
+          else if(a==Taran_n_leds-1){
+            led_on_Taran=0;
+          }
+          Taran[led_on_Taran].dimmingState = 1;
+        }
+        if(Taran[a].colorCounter > 1){
+          Taran[a].colorCounter-=1;  
+          pixels_1.setPixelColor(Taran[a].nr_led, pixels_1.Color(Taran[a].colorCounter,Taran[a].colorCounter,Taran[a].colorCounter/2));         
+        }
+        else if(Taran[a].colorCounter <= 1){
+          Taran[a].dimmingState = 0;
+          pixels_1.setPixelColor(Taran[a].nr_led, pixels_1.Color(0,0,0));      
+        }
+      }
+    }
+    //ROZEWIE LIGHTHOUSE
+    for(unsigned int a = 0; a < Rozewie_n_leds; a = a + 1 ){
+      if(Rozewie[a].dimmingState == 1){
+        if(Rozewie[a].colorCounter < Rozewie[a].color[0]){
+          Rozewie[a].colorCounter+=1;
+          pixels_1.setPixelColor(Rozewie[a].nr_led, pixels_1.Color(Rozewie[a].colorCounter,Rozewie[a].colorCounter,Rozewie[a].colorCounter/2));      
+        }
+        else if(Rozewie[a].colorCounter >= Rozewie[a].color[0]){
+          Rozewie[a].dimmingState = -1;
+        }
+      }
+      if(Rozewie[a].dimmingState == -1){
+        if(Rozewie[a].colorCounter == Rozewie[a].color[0]/2){
+          if(a<Rozewie_n_leds-1){
+            led_on_Rozewie=a+1;
+          }
+          else if(a==Rozewie_n_leds-1){
+            led_on_Rozewie=0;
+          }
+          Rozewie[led_on_Rozewie].dimmingState = 1;
+        }
+        if(Rozewie[a].colorCounter > 1){
+          Rozewie[a].colorCounter-=1;  
+          pixels_1.setPixelColor(Rozewie[a].nr_led, pixels_1.Color(Rozewie[a].colorCounter,Rozewie[a].colorCounter,Rozewie[a].colorCounter/2));         
+        }
+        else if(Rozewie[a].colorCounter <= 1){
+          Rozewie[a].dimmingState = 0;
+          pixels_1.setPixelColor(Rozewie[a].nr_led, pixels_1.Color(0,0,0));      
+        }
+      }
+    }
     pixels_1.show();
   }  
 }
-  // //Jastarnia LIGHTHOUSE
-  // // now = millis();
-
-  // if(now - lhTimer >= lhdel){ 
-    
-  //   for(unsigned int a = 0; a < 6; a = a + 1 ){
-  //     if(lhJas[a].dimmingState == 1){
-  //       if(lhJas[a].colorCounter < lhJas[a].color){
-  //         lhJas[a].colorCounter+=1;
-
-  //         pixels_2.setPixelColor(lhJas[a].nr_led, pixels_2.Color(lhJas[a].colorCounter,lhJas[a].colorCounter,lhJas[a].colorCounter/2));      
-  //         pixels_2.show();  
-  //         // setLed(lhJas[a].stripe,lhJas[a].nr_led,lhJas[a].colorCounter,lhJas[a].colorCounter,lhJas[a].colorCounter);
-  //       }
-  //       else if(lhJas[a].colorCounter >= lhJas[a].color){
-  //         lhJas[a].dimmingState = -1;
-  //         if(a<5){
-  //           nHel=a+1;
-  //         }
-  //         else if(a==5){
-  //           nHel=0;
-  //         }
-  //         lhJas[nHel].dimmingState = 1;
-  //       }
-  //     }
-  //     if(lhJas[a].dimmingState == -1){
-  //       if(lhJas[a].colorCounter > 1){
-  //         lhJas[a].colorCounter-=2;
-  //         pixels_2.setPixelColor(lhJas[a].nr_led, pixels_2.Color(lhJas[a].colorCounter,lhJas[a].colorCounter,lhJas[a].colorCounter/2));      
-  //         pixels_2.show();  
-  //         // setLed(lhJas[a].stripe,lhJas[a].nr_led,lhJas[a].colorCounter,lhJas[a].colorCounter,lhJas[a].colorCounter);
-  //       }
-  //       else if(lhJas[a].colorCounter <= 1){
-  //         lhJas[a].dimmingState = 0;
-  //       }
-  //     }
-  //   }
-  //   // lhTimer = millis();
-  // }  
-  // // Kaszyca LIGHTHOUSE
-  // // now = millis();
-
-  // if(now - lhTimer >= lhdel){ 
-    
-  //   for(unsigned int a = 0; a < 4; a = a + 1 ){
-  //     if(lhKas[a].dimmingState == 1){
-  //       if(lhKas[a].colorCounter < lhKas[a].color){
-  //         lhKas[a].colorCounter+=1;
-  //         pixels_2.setPixelColor(lhKas[a].nr_led, pixels_2.Color(lhKas[a].colorCounter,lhKas[a].colorCounter,lhKas[a].colorCounter/2));      
-  //         pixels_2.show();  
-  //         // setLed(lhKas[a].stripe,lhKas[a].nr_led,lhKas[a].colorCounter,lhKas[a].colorCounter,lhKas[a].colorCounter);
-  //       }
-  //       else if(lhKas[a].colorCounter >= lhKas[a].color){
-  //         lhKas[a].dimmingState = -1;
-  //         if(a<3){
-  //           nHel=a+1;
-  //         }
-  //         else if(a==3){
-  //           nHel=0;
-  //         }
-  //         lhKas[nHel].dimmingState = 1;
-  //       }
-  //     }
-  //     if(lhKas[a].dimmingState == -1){
-  //       if(lhKas[a].colorCounter > 1){
-  //         lhKas[a].colorCounter-=2;
-  //         pixels_2.setPixelColor(lhKas[a].nr_led, pixels_2.Color(lhKas[a].colorCounter,lhKas[a].colorCounter,lhKas[a].colorCounter/2));      
-  //         pixels_2.show(); 
-  //         // setLed(lhKas[a].stripe,lhKas[a].nr_led,lhKas[a].colorCounter,lhKas[a].colorCounter,lhKas[a].colorCounter);
-  //       }
-  //       else if(lhKas[a].colorCounter <= 1){
-  //         lhKas[a].dimmingState = 0;
-  //       }
-  //     }
-  //   }
-  //   lhTimer = millis();
-  // }  
-
+ 
