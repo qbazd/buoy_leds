@@ -1,5 +1,3 @@
-
-
 #include "Arduino.h"
 #include "Adafruit_NeoPixel.h"
 #ifdef __AVR__
@@ -11,7 +9,7 @@
 
 
 #define NUMPIXELS      132
-#define BUOYS          60
+#define BUOYS          132
 
 Adafruit_NeoPixel pixels_1 = Adafruit_NeoPixel(NUMPIXELS, PIN_LED1, NEO_GRB + NEO_KHZ800);
 
@@ -39,8 +37,8 @@ typedef struct
 } lighthouse;
 
 
-// #include "/home/dymitr/Documents/2022_01-Locja_super_yachts/firmware/esp32-wrover-b/buoy_leds/led_list.txt"
-#include "/home/dymitr/Dokumenty/13-05-2022_Buoy-leds/buoy_leds/led_list.txt"
+#include "/home/dymitr/Documents/2022_01-Locja_super_yachts/firmware/esp32-wrover-b/buoy_leds/led_list.txt"
+// #include "/home/dymitr/Dokumenty/13-05-2022_Buoy-leds/buoy_leds/led_list.txt"
 
 uint32_t lhTimer;
 uint32_t now;
@@ -425,4 +423,3 @@ void loop() {
     pixels_1.show();
   }  
 }
- 
